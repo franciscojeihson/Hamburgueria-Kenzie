@@ -1,11 +1,17 @@
-import { CartTotal, CartProduct } from "./CartFunctions";
-import "./style.css";
+import { StyledCart } from './styles'
+import CartProduct from '../CartProducts'
+import CartTotal from '../CartTotal'
 
-const Cart = ({ currentSale, cartTotal, handleCartProd, deleteProd }) => {
+const Cart = ({
+  currentSale,
+  clearCart,
+  handleCartProduct,
+  cartTotal,
+}) => {
   return (
-    <div id="cart-all">
-      <div id="cart-title">
-        <h3>Carrinho de Compras</h3>
+    <StyledCart>
+      <div id='titleCart'>
+        <h3>Carrinho de compras</h3>
       </div>
 
       {currentSale.length > 0 ? (
@@ -14,23 +20,29 @@ const Cart = ({ currentSale, cartTotal, handleCartProd, deleteProd }) => {
             {currentSale
               .map((prod) => (
                 <li key={prod.id}>
-                  <CartProduct prod={prod} handleCartProd={handleCartProd} />
+                  <CartProduct
+                    prod={prod}
+                    handleCartProduct={handleCartProduct}
+                  />
                 </li>
               ))
               .reverse()}
           </ul>
-          <CartTotal cartTotal={cartTotal} deleteProd={deleteProd} />
+          <CartTotal
+            cartTotal={cartTotal}
+            clearCart={clearCart}
+          />
         </>
       ) : (
-        <ul id="empty-cart">
-          <div id="empty-info">
-            <h3>Sua sacola está vazia</h3>
+        <ul id='emptyCartBox'>
+          <div id='emptyCartInfo'>
+            <h3>O seu carrinho está vazio.</h3>
             <p>Adicione itens</p>
           </div>
         </ul>
       )}
-    </div>
-  );
-};
+    </StyledCart>
+  )
+}
 
-export default Cart;
+export default Cart

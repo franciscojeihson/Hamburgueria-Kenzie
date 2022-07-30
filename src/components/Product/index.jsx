@@ -1,19 +1,24 @@
-import "./style.css";
+import { StyledProducts } from './styles'
+import Button from '../Button'
 
 const Product = ({ product, handleClick }) => {
   return (
-    <div className="prod-container">
-      <div id="img-box">
-        <img src={product.img} alt={product.name} />
+    <StyledProducts>
+      <div id='productImgBox'>
+        <img src={product.img} alt='' />
       </div>
-      <div id="prod-infos">
+      <div id='productInfoBox'>
         <h3>{product.name}</h3>
         <p>{product.category}</p>
-        <span>R$: {product.price.toFixed(2)}</span>
-        <button onClick={() => handleClick(product.id)}>Adicionar</button>
+        <span>
+          {product.price.toFixed(2)}
+        </span>
+        <Button green onClick={() => handleClick(product.id)}>
+          Adicionar
+        </Button>
       </div>
-    </div>
-  );
-};
+    </StyledProducts>
+  )
+}
 
-export default Product;
+export default Product

@@ -1,35 +1,31 @@
-import { useRef, useState } from "react";
-import "./style.css";
+import InputSearch from '../InputSearch'
+import Button from '../Button'
+import { StyledHeader } from './styles'
+import Logo from '../Logo'
+import { useState, useRef } from 'react'
 
 const Header = ({ showProducts, setFilteredProducts }) => {
-  const [inputData, setInputData] = useState("");
-  const inputRef = useRef(null);
+  const [inputData, setInputData] = useState('')
+  const inputRef = useRef(null)
 
   const handleInput = () => {
-    const inputElem = inputRef.current.querySelector("input");
-    inputElem.value = "";
+    const inputElement = inputRef.current.querySelector('input')
+    inputElement.value = ''
 
-    showProducts(inputData);
-  };
+    showProducts(inputData)
+  }
 
   return (
-    <header>
-      <img
-        onClick={() => setFilteredProducts([])}
-        id="logo"
-        src="/assets/Mask Group.svg"
-        alt="Burguer Kenzie Logo"
-      />
-      <form onSubmit={(evt) => evt.preventDefault()} ref={inputRef}>
-        <input
-          type="text"
-          placeholder="Digitar Pesquisa"
-          onChange={(evt) => setInputData(evt.target.value)}
-        />
-        <button onClick={handleInput}>Pesquisar</button>
+    <StyledHeader>
+      <Logo setFilteredProducts={setFilteredProducts} />
+      <form onSubmit={(e) => e.preventDefault()} ref={inputRef}>
+        <InputSearch setInputData={setInputData} />
+        <Button type='button' onClick={handleInput}>
+          Pesquisar
+        </Button>
       </form>
-    </header>
-  );
-};
+    </StyledHeader>
+  )
+}
 
-export default Header;
+export default Header

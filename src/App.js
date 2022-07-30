@@ -1,87 +1,138 @@
-import { useEffect, useState } from "react";
-import "./App.css";
-import api from "./components/Api/api";
-import Header from "./components/Header";
-import ProductList from "./components/ProductList";
-import Cart from "./components/Cart";
-import "./Styles/style.css";
+import Header from './components/Header'
+import ProductsList from './components/ProductList'
+import Cart from './components/Cart'
+import { GlobalStyle } from './Styles/GlobalStyle'
+import 'react-toastify/dist/ReactToastify.css'
+import { StyledApp } from './styles'
+import { useState, useEffect } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
+import api from './components/Api/api'
 
 function App() {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [currentSale, setCurrentSale] = useState([]);
-  const [cartTotal, setCartTotal] = useState(0);
+  const [products, setProducts] = useState([])
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [currentSale, setCurrentSale] = useState([])
+  const [cartTotal, setCartTotal] = useState(0)
 
   useEffect(() => {
     api
-      .get("https://hamburgueria-kenzie-json-serve.herokuapp.com/products")
-      .then((res) => setProducts(res.data));
-    currentSaleTotal();
-  }, [currentSale]);
+      .get('https://hamburgueria-kenzie-json-serve.herokuapp.com/products')
+      .then((response) => setProducts(response.data))
+    totalCurrentSale()
+  }, [currentSale])
 
-  const removeAccents = (str) => {
-    const newStr = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    return newStr.toLowerCase();
-  };
+  const removeSpecial = (str) => {
+    const nStr = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    return nStr.toLowerCase()
+  }
 
-  const showProducts = (str) => {
-    const nString = removeAccents(str);
+  const showProducts = (string) => {
+    const newString = removeSpecial(string)
 
-    const productFound = products.filter((product) => {
-      return removeAccents(product.name).includes(nString);
-    });
-    setFilteredProducts(productFound);
-  };
+    const prodFound = products.filter((prod) => {
+      return (
+        removeSpecial(prod.name).includes(newString) ||
+        removeSpecial(prod.category).includes(newString)
+      )
+    })
+    setFilteredProducts(prodFound)
+  }
 
-  const handleClick = (productID) => {
-    const checkCart = currentSale.find((product) => product.id === productID);
+  const handleClick = (productId) => {
+    const checkProdCart = currentSale.find((prod) => prod.id === productId)
+    let prodName = ''
 
-    if (checkCart === undefined) {
-      const selectedProd = products.find((product) => {
-        return product.id === productID;
-      });
-      setCurrentSale([...currentSale, selectedProd]);
+    if (checkProdCart === undefined) {
+      const selectedProd = products.find((prod) => {
+        prodName = prod.name
+        return prod.id === productId
+      })
+      setCurrentSale([...currentSale, selectedProd])
+
+      toast.success(`${prodName} adicionado ao carrinho.`, {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
+    } else {
+      toast.error('Produto já existente no carrinho!', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
     }
-  };
+  }
 
-  const handleCartProd = (prodId) => {
-    const newCurrentSale = currentSale.filter((prod) => prod.id !== prodId);
-    setCurrentSale(newCurrentSale);
-  };
+  const handleCartProduct = (productId, productName) => {
+    const newCurrentSale = currentSale.filter((prod) => prod.id !== productId)
+    setCurrentSale(newCurrentSale)
 
-  const currentSaleTotal = () => {
-    const total = currentSale.reduce((a, prod) => a + prod.price, 0);
-    setCartTotal(total.toFixed(2));
-  };
+    toast.success(`${productName} removido do carrinho.`, {
+      position: 'top-center',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    })
+  }
 
-  const deleteProd = () => {
-    setCurrentSale([]);
-  };
+  const totalCurrentSale = () => {
+    const result = currentSale.reduce((acc, prod) => acc + prod.price, 0)
+    setCartTotal(result)
+  }
+
+  const clearCart = () => {
+    
+    setCurrentSale([])
+
+    toast.success('Carrinho limpo com sucesso.', {
+      position: 'top-right',
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    })
+  }
 
   return (
     <>
+      
+      <ToastContainer />
+      <GlobalStyle />
       <Header
         showProducts={showProducts}
         setFilteredProducts={setFilteredProducts}
       />
-      <main>
-        <div id="box-container">
-          <ProductList
+      <StyledApp>
+        <section>
+          <ProductsList
             products={filteredProducts.length > 0 ? filteredProducts : products}
             handleClick={handleClick}
           />
-        </div>
+        </section>
         <aside>
           <Cart
             currentSale={currentSale}
             cartTotal={cartTotal}
-            handleCartProd={handleCartProd}
-            deleteProd={deleteProd}
+            handleCartProduct={handleCartProduct}
+           clearCart={clearCart}
           />
         </aside>
-      </main>
+      </StyledApp>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
